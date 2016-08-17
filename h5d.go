@@ -1,8 +1,22 @@
 package hdf5
 
-// #include "hdf5.h"
-// #include <stdlib.h>
-// #include <string.h>
+/*
+#include "hdf5.h"
+#include <stdlib.h>
+#include <string.h>
+
+herr_t _H5Dwrite(
+  hid_t dataset_id,
+  hid_t mem_type_id,
+  hid_t mem_space_id,
+  hid_t file_space_id,
+  hid_t xfer_plist_id,
+  const uintptr_t buf
+) {
+  return H5Dwrite(dataset_id, mem_type_id, mem_space_id, file_space_id,
+                  xfer_plist_id, (void*) buf);
+}
+*/
 import "C"
 
 import (
@@ -148,7 +162,8 @@ func (s *Dataset) WriteSubset(data interface{}, memspace, filespace *Dataspace) 
 	if filespace != nil {
 		filespace_id = filespace.id
 	}
-	rc := C.H5Dwrite(s.id, dtype.id, memspace_id, filespace_id, 0, addr)
+	rc := C._H5Dwrite(s.id, dtype.id, memspace_id, filespace_id, 0,
+		C.uintptr_t(uintptr(addr)))
 	err = h5err(rc)
 	return err
 }
