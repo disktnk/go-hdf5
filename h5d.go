@@ -173,6 +173,17 @@ func (s *Dataset) Write(data interface{}) error {
 	return s.WriteSubset(data, nil, nil)
 }
 
+// Extend dataset dimension
+func (s *Dataset) Extend(dims []uint) error {
+	var c_dims *C.hsize_t
+	if dims != nil {
+		c_dims = (*C.hsize_t)(unsafe.Pointer(&dims[0]))
+	}
+
+	rc := C.H5Dextend(s.id, c_dims)
+	return h5err(rc)
+}
+
 // Creates a new attribute at this location.
 func (s *Dataset) CreateAttribute(name string, dtype *Datatype, dspace *Dataspace) (*Attribute, error) {
 	return createAttribute(s.id, name, dtype, dspace, P_DEFAULT)
